@@ -1,12 +1,14 @@
 import csv
 from .classes import Observation
 
+
 def _read(filename: str):
     with open(filename) as csvfile:
         csvreader = csv.reader(csvfile)
         next(csvreader) # skip header
         data = [row for row in csvreader]
         return data
+
 
 def parse(filename: str):
     data = _read(filename)

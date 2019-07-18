@@ -1,14 +1,15 @@
 import numpy as np
 
 
-"""
-Constant-velocity state process matrix
-"""
-Process = lambda t: np.array([
-    [1, 0, t, 0],
-    [0, 1, 0, t],
-    [0, 0, 1, 0],    
-    [0, 0, 0, 1]])
+def Process(t: float):
+    """
+    Constant-velocity state process matrix
+    """
+    return np.array([
+        [1, 0, t, 0],
+        [0, 1, 0, t],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]])
 
 
 """
@@ -18,16 +19,14 @@ Measurement = np.array([
     [1, 0, 0, 0],
     [0, 1, 0, 0]])
 
-
 """
 Process noise matrix, Q
 """
 ProcessNoise = np.array([
     [1.0, 0.0, 0.0, 0.0],
     [0.0, 1.0, 0.0, 0.0],
-    [0.0, 0.0, 0.1, 0.0],    
+    [0.0, 0.0, 0.1, 0.0],
     [0.0, 0.0, 0.0, 0.1]])
-
 
 """
 Initial covariance matrix, P0

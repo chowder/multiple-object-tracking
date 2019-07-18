@@ -3,6 +3,7 @@ from pprint import pprint
 import mot
 from mot.classes import State
 
+
 def main():
     data = mot.parse("20190716T195132.csv")
     state = State.from_ob(data.pop(0))

@@ -2,7 +2,7 @@ import numpy as np
 import pprint
 from numpy.linalg import inv, multi_dot
 
-from .models import Process, InitialCovariance, ProcessNoise as Q, Measurement as H
+from .models import Process, InitialCovariance, ProcessNoise, Measurement
 
 
 class Observation(object):
@@ -35,20 +35,17 @@ class State(object):
         Returns the predicted state at time `time`
         """
         delta_time = time - self.time
-        F = Process(delta_time)
+        f = Process(delta_time)
         # Perform predictions
-        pred_state = F.dot(self.state)
-        pred_cov = multi_dot([F, self.cov, F.transpose()]) + Q
+        pred_state = f.dot(self.state)
+        pred_cov = multi_dot([f, self.cov, f.transpose()]) + ProcessNoise
         return State(time, self.mac, pred_state, pred_cov)
 
     def distance(self, other: Observation) -> float:
-        C = self.cov[0:2, 0:2]
-        v = H.dot(self.state - other.state)
-        R = multi_dot([v.transpose(), inv(C), v]) ** 0.5
-        return R[0][0]
-        
+        c = self.cov[0:2, 0:2]
+        v = Measurement.dot(self.state - other.state)
+        r = multi_dot([v.transpose(), inv(c), v]) ** 0.5
+        return r[0][0]
 
     def __repr__(self):
         return pprint.pformat(self.__dict__)
-
-
