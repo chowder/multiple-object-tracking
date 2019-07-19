@@ -5,7 +5,7 @@ from mot.classes import State
 
 
 def main():
-    data = mot.parse("20190716T195132.csv")
+    data = mot.parse("data/20190716T195132.csv")
     state = State.from_ob(data.pop(0))
     p_state = state.predict_at(data[0].time)
     pprint(p_state.distance(data[0]))

@@ -38,7 +38,7 @@ class State(object):
         f = Process(delta_time)
         # Perform predictions
         pred_state = f.dot(self.state)
-        pred_cov = multi_dot([f, self.cov, f.transpose()]) + ProcessNoise
+        pred_cov = multi_dot([f, self.cov, f.transpose()]) + ProcessNoise(delta_time)
         return State(time, self.mac, pred_state, pred_cov)
 
     def distance(self, other: Observation) -> float:

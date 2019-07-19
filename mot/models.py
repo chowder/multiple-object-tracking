@@ -12,6 +12,17 @@ def Process(t: float):
         [0, 0, 0, 1]])
 
 
+def ProcessNoise(t: float):
+    """
+    Process noise matrix, Q
+    """
+    return np.array([
+        [1.0 * t, 0.0, 0.0, 0.0],
+        [0.0, 1.0 * t, 0.0, 0.0],
+        [0.0, 0.0, 0.1 * t, 0.0],
+        [0.0, 0.0, 0.0, 0.1 * t]])
+
+
 """
 Measurement matrix, H
 """
@@ -19,14 +30,6 @@ Measurement = np.array([
     [1, 0, 0, 0],
     [0, 1, 0, 0]])
 
-"""
-Process noise matrix, Q
-"""
-ProcessNoise = np.array([
-    [1.0, 0.0, 0.0, 0.0],
-    [0.0, 1.0, 0.0, 0.0],
-    [0.0, 0.0, 0.1, 0.0],
-    [0.0, 0.0, 0.0, 0.1]])
 
 """
 Initial covariance matrix, P0
