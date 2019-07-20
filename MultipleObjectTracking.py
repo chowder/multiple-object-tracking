@@ -1,16 +1,17 @@
 from pprint import pprint
 
 import mot
-from mot.classes import State
+from mot.classes import State, Hypothesis, Target
 
 
 def main():
-    data = mot.parse("data/20190716T195132.csv")
-    state = State.from_ob(data.pop(0))
-    p_state = state.predict_at(data[0].time)
-    pprint(p_state.distance(data[0]))
-    pprint(p_state.distance(data[1]))
-    pprint(p_state.distance(data[2]))
+    observations = mot.parse("data/20190716T195132.csv")
+    o = observations.pop(0)
+    state = State.from_observation(o)
+
+    initial_target = Target.from_initial_state(state)
+    hyps = [Hypothesis()]
+    hyps[0].add(initial_target)
 
 
 if __name__ == "__main__":
