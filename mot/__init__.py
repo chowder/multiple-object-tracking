@@ -12,5 +12,5 @@ def _read(filename: str):
 
 def parse(filename: str):
     data = _read(filename)
-    obs = [Observation(float(i[0]), float(i[1]), float(i[2]), i[3]) for i in data]
+    obs = [Observation(float(i[0]), float(i[1]), float(i[2]), i[3], index) for index, i in enumerate(data)]
     return obs

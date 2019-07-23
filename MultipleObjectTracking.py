@@ -1,17 +1,14 @@
-from pprint import pprint
-
 import mot
-from mot.classes import State, Hypothesis, Target
+from mot.classes import Tracker
+from pprint import pprint
 
 
 def main():
-    observations = mot.parse("data/20190716T195132.csv")
-    o = observations.pop(0)
-    state = State.from_observation(o)
-
-    initial_target = Target.from_initial_state(state)
-    hyps = [Hypothesis()]
-    hyps[0].add(initial_target)
+    observations = mot.parse("data/20190724T163125.csv")
+    tracker = Tracker(observations)
+    for i in range(5):
+        tracker.step()
+    pprint(tracker.hyps)
 
 
 if __name__ == "__main__":

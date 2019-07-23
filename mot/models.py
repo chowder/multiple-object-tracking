@@ -31,6 +31,12 @@ Measurement = np.array([
     [0, 1, 0, 0]])
 
 
+MeasurementNoise = np.array([
+    [0.1, 0],
+    [0, 0.1]
+])
+
+
 """
 Initial covariance matrix, P0
 """
