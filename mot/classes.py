@@ -2,11 +2,14 @@ import numpy as np
 import pprint
 
 from copy import deepcopy
+from heapq import nsmallest
 from numpy.linalg import inv, multi_dot
 from typing import List
 from .models import Process, InitialCovariance, ProcessNoise, Measurement, MeasurementNoise
 
-MAX_DISTANCE = 5
+MAX_DISTANCE = 9.75
+PRUNE_SIZE = 200
+NEW_TRACK_COST = 100
 
 
 class Observation(object):
@@ -37,6 +40,14 @@ class Tracker(object):
         for hyp in self.hyps:
             new_hyps = new_hyps + hyp.consider(observation)
         self.hyps = new_hyps
+        self.prune()
+
+    def prune(self):
+        self.hyps = nsmallest(PRUNE_SIZE, self.hyps, key=lambda x: x.cost)
+
+    def process(self):
+        while len(self.observations) > 0:
+            self.step()
 
     def __repr__(self):
         return pprint.pformat(self.__dict__)
@@ -45,15 +56,23 @@ class Tracker(object):
 class Hypothesis(object):
     def __init__(self):
         self.tracks: List[Track] = []
+        self.cost = 0
 
     def consider(self, observation: Observation):
         new_hyps = []
         for index, track in enumerate(self.tracks):
-            compatible, new_track = track.compatible_with(observation)
+            compatible, new_track, cost = track.compatible_with(observation)
             if compatible:
                 hyp = deepcopy(self)
                 hyp.tracks[index] = new_track
+                hyp.cost += cost
                 new_hyps.append(hyp)
+
+        # Consider that the observation may be a new track on its own
+        hyp = deepcopy(self)
+        hyp.tracks.append(Track.from_observation(observation))
+        hyp.cost += 0 if len(new_hyps) == 0 else NEW_TRACK_COST
+        new_hyps.append(hyp)
         return new_hyps
 
     def __repr__(self):
@@ -87,11 +106,8 @@ class Track(object):
         distance = (multi_dot([v.transpose(), inv(c), v]) ** 0.5)[0][0]
 
         # STEP 3: Data Association
-        if distance > MAX_DISTANCE:
-            print("Not compatible! Distance: {:.3f}".format(distance))
-            return False, None
-        else:
-            print("Compatible! Distance: {:.3f}".format(distance))
+        if distance < MAX_DISTANCE:
+            # print("Compatible! Distance: {:.3f}".format(distance))
             # STEP 4: State update
             new_track = deepcopy(self)
             new_track.points.append(observation.index)
@@ -102,7 +118,10 @@ class Track(object):
             # State and covariance update
             new_track.state = new_track.state + k.dot(v)
             new_track.cov = (np.identity(4) - k.dot(Measurement)).dot(new_track.cov)
-            return True, new_track
+            return True, new_track, distance
+        else:
+            # print("Not compatible! Distance: {:.3f}".format(distance))
+            return False, None, 0
 
     def __repr__(self):
         return pprint.pformat(self.__dict__)
