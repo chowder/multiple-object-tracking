@@ -19,9 +19,9 @@ def main():
     plot = Plotter()
     plot.use_observations(observations)
     plot.use_tracks(tracks)
-    plot._evaluate_tracks()
+    # plot._evaluate_tracks()
 
-    #plot.plot_and_show()
+    plot.plot_and_show()
 
 
 if __name__ == "__main__":

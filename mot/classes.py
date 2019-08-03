@@ -8,8 +8,9 @@ from typing import List
 from .models import Process, InitialCovariance, ProcessNoise, Measurement, MeasurementNoise
 
 MAX_DISTANCE = 9.75
-PRUNE_SIZE = 200
-NEW_TRACK_COST = 100
+PRUNE_SIZE = 100
+NEW_TRACK_COST = 50
+KEEP_ALIVE_FRAMES = 3
 
 
 class Observation(object):
@@ -43,10 +44,22 @@ class Tracker(object):
         self.prune()
 
     def prune(self):
+        # First select the hypotheses we're supposed to keep alive
+        temp = []
+        for hyp in self.hyps:
+            if hyp.keep_alive > 0:
+                # Decrease their lifespan
+                hyp.keep_alive -= 1
+                temp.append(hyp)
+        temp = nsmallest(PRUNE_SIZE, temp, key=lambda x: x.cost)
         self.hyps = nsmallest(PRUNE_SIZE, self.hyps, key=lambda x: x.cost)
+        self.hyps += temp
 
     def process(self):
+        counter = 1
         while len(self.observations) > 0:
+            print("Processing step {}".format(counter))
+            counter += 1
             self.step()
 
     def __repr__(self):
@@ -57,6 +70,7 @@ class Hypothesis(object):
     def __init__(self):
         self.tracks: List[Track] = []
         self.cost = 0
+        self.keep_alive = 0
 
     def consider(self, observation: Observation):
         new_hyps = []
@@ -72,6 +86,7 @@ class Hypothesis(object):
         hyp = deepcopy(self)
         hyp.tracks.append(Track.from_observation(observation))
         hyp.cost += 0 if len(new_hyps) == 0 else NEW_TRACK_COST
+        hyp.keep_alive += KEEP_ALIVE_FRAMES
         new_hyps.append(hyp)
         return new_hyps
 
