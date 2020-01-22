@@ -1,5 +1,10 @@
 import numpy as np
 
+MAX_DISTANCE = 10
+PRUNE_SIZE = 400
+NEW_TRACK_COST = 100
+KEEP_ALIVE_FRAMES = 3
+
 
 def Process(t: float):
     """
@@ -17,10 +22,10 @@ def ProcessNoise(t: float):
     Process noise matrix, Q
     """
     return np.array([
-        [2.5 * t, 0.0, 0.0, 0.0],
-        [0.0, 2.5 * t, 0.0, 0.0],
-        [0.0, 0.0, 1.0 * t, 0.0],
-        [0.0, 0.0, 0.0, 1.0 * t]])
+        [0.5 * t, 0.0, 0.0, 0.0],
+        [0.0, 0.5 * t, 0.0, 0.0],
+        [0.0, 0.0, 0.1 * t, 0.0],
+        [0.0, 0.0, 0.0, 0.1 * t]])
 
 
 """
@@ -32,8 +37,8 @@ Measurement = np.array([
 
 
 MeasurementNoise = np.array([
-    [1, 0],
-    [0, 1]
+    [0.1, 0],
+    [0, 0.1]
 ])
 
 
@@ -41,7 +46,7 @@ MeasurementNoise = np.array([
 Initial covariance matrix, P0
 """
 InitialCovariance = np.array([
-    [0.5, 0.0, 0.0, 0.0],
-    [0.0, 0.5, 0.0, 0.0],
+    [1.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0],
     [0.0, 0.0, 0.1, 0.0],
     [0.0, 0.0, 0.0, 0.1]])

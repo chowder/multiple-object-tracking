@@ -36,7 +36,7 @@ class Plotter:
             plt.plot(x, y)
         plt.show()
 
-    def _evaluate_tracks(self):
+    def evaluate_tracks(self):
         incorrect_edges = 0
         # Create a dictionary of predicted edges
         predicted_edges = {}
